@@ -1,7 +1,6 @@
 import os
 
 
-
 def get_path(path:str) -> str:
     return path
 
