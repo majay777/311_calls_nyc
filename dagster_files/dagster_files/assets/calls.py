@@ -16,6 +16,13 @@ import os
 
 
 file_path1 = os.path.abspath(os.path.join("data", "raw","*.csv"))
+user_name = os.getenv("DAGSTER_PG_USERNAME")
+db_pwd = os.getenv("DAGSTER_PG_PASSWORD")
+hostname = os.getenv("DAGSTER_PG_HOST")
+dbname = os.getenv("DAGSTER_PG_DB")
+
+
+
 
 @asset(group_name="api_call", compute_kind="Python", partitions_def=daily_partition,)
 def call_file(context:  AssetExecutionContext) -> MaterializeResult:
@@ -50,7 +57,7 @@ def ingest_to_db(context: AssetExecutionContext):
 
 
 
-    engine = create_engine('postgresql://sqluser:sqluserpwd@localhost:5432/nyc_311_calls')
+    engine = create_engine("postgresql://{}:{}@{}:5432/{}".format(user_name,db_pwd,hostname,dbname))
     # Create an inspector
     inspector = inspect(engine)
 
