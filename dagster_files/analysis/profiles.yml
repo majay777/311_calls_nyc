@@ -1,0 +1,18 @@
+config:
+  use_colors: True
+311_calls:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      user: sqluser
+      password: sqluserpwd
+      port: 5432
+      dbname: nyc_311_calls # or database instead of dbname
+      schema: public
+      threads: 1
+      keepalives_idle: 0 # default 0, indicating the system default. See below
+      connect_timeout: 30 # default 10 seconds
+      retries: 1  # default 1 retry on error/timeout when opening connections
+      search_path: public

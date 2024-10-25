@@ -1,0 +1,20 @@
+
+
+# Postgres storage can be set using either credentials or a connection string.  This requires that
+# the `dagster-postgres` library be installed and a database configured with UTC timezone.
+
+
+
+# and this config grabs the database credentials from environment variables
+storage:
+  postgres:
+    postgres_db:
+      username:
+        env: DAGSTER_PG_USERNAME
+      password:
+        env: DAGSTER_PG_PASSWORD
+      hostname:
+        env: DAGSTER_PG_HOST
+      db_name:
+        env: DAGSTER_PG_DB
+      port: 5432

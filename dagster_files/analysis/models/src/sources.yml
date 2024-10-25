@@ -1,0 +1,12 @@
+version: 2
+
+
+sources:
+  - name: nyc_311_calls
+    schema: public
+    tables:
+      - name: call_records
+        description: Contains data from the NYC 311 Calls open data.
+
+
+
