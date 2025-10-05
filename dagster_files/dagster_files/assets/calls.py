@@ -14,14 +14,14 @@ import pandas as  pd
 from .constants import  calls_file_path
 import os
 
+from ..resources.postgres_io import connect_postgres, PostgresIOManager
 
 file_path1 = os.path.abspath(os.path.join("data", "raw","*.csv"))
 user_name = os.getenv("DAGSTER_PG_USERNAME")
 db_pwd = os.getenv("DAGSTER_PG_PASSWORD")
 hostname = os.getenv("DAGSTER_PG_HOST")
 dbname = os.getenv("DAGSTER_PG_DB")
-
-
+port = os.getenv("POSTGRES_PORT")
 
 
 @asset(group_name="api_call", compute_kind="Python", partitions_def=daily_partition,)
@@ -43,7 +43,8 @@ def call_file(context:  AssetExecutionContext) -> MaterializeResult:
 
 
 
-@asset(group_name="ingest", deps=["call_file"], partitions_def=daily_partition)
+@asset(group_name="ingest", deps=["call_file"], partitions_def=daily_partition, io_manager_key="postgres_io",
+       required_resource_keys={"postgres_io"})
 def ingest_to_db(context: AssetExecutionContext):
     global metadata
     partition_date_str = context.partition_key
@@ -54,10 +55,10 @@ def ingest_to_db(context: AssetExecutionContext):
     file_path = os.path.abspath(calls_file_path.format(str(yesterdays_date)))
     df = pd.read_csv(file_path)
     df = df.where(pd.notnull(df), None)
+    # context.resources.postgres_io.extract_data()
+    # engine = context.resources.postgres_io.connect()
 
-
-
-    engine = create_engine("postgresql://{}:{}@{}:5432/{}".format(user_name,db_pwd,hostname,dbname))
+    engine = create_engine("postgresql://{}:{}@{}:{}/{}".format(user_name,db_pwd,hostname,port,dbname))
     # Create an inspector
     inspector = inspect(engine)
 
@@ -66,6 +67,7 @@ def ingest_to_db(context: AssetExecutionContext):
     primarykey='unique_key'
     if table_name in inspector.get_table_names():
         connect = engine.connect()
+        # connect = engine
         def insert_on_conflict_update(table, conn2, keys, data_iter):
             # update columns  on primary key conflict
             data = [dict(zip(keys, row)) for row in data_iter]
