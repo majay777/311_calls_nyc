@@ -7,5 +7,3 @@ defs = Definitions(
     assets=[*call_assets],
 
 )
-
-

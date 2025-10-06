@@ -1,7 +1,7 @@
 from typing import Mapping, Any, Optional
 from ..partitions import daily_partition
 import json
-from dagster import AssetExecutionContext, AssetKey
+from dagster import AssetExecutionContext, AssetKey, with_source_code_references, Definitions
 from dagster_dbt import dbt_assets, DbtCliResource, DagsterDbtTranslator
 from ..project import dbt_project
 
@@ -24,10 +24,11 @@ class CustomizedDagsterDbtTranslator(DagsterDbtTranslator):
 @dbt_assets(
     manifest=dbt_project.manifest_path,
     dagster_dbt_translator=CustomizedDagsterDbtTranslator(),
-    exclude=INCREMENTAL_SELECTOR
+    exclude=INCREMENTAL_SELECTOR,
 )
 def dbt_analytics(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
+
 
 
 @dbt_assets(
@@ -48,3 +49,6 @@ def incremental_dbt_models(
     }
 
     yield from dbt.cli(["build", "--vars", json.dumps(dbt_vars)], context=context).stream()
+
+
+defs = Definitions(assets=with_source_code_references([dbt_analytics, incremental_dbt_models]))
