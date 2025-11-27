@@ -1,11 +1,12 @@
-# import glob
+import glob
 
 # import pandas as pd
 # path = r'D:\311_calls_nyc\dagster_files\data\raw\*.csv'
 
-# # Use glob to get all file paths
-# all_files = glob.glob(path)
+# Use glob to get all file paths
+all_files = glob.glob(path)
 
+print(all_files)
 # # Read each file and concatenate them into a single DataFrame
 # df_list = []
 # for file in all_files:
