@@ -237,7 +237,7 @@ def update_complaint_types(value):
 @callback(Output('zip_bar_graph', 'figure'),
           Input('zip_bar', 'value'))
 def update_zip_bar(value):
-    global df
+    
     df_zip_bar = df_app2[df_app2['incident_zip'] == value]
     fig_zip_bar = px.bar(df_zip_bar, x='complaint_type', y='unique_key', text_auto='0.2s',
                          labels={'unique_key': 'Number of Complaints'}, title='Calls by Zip Address')
